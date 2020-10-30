@@ -34,11 +34,11 @@ public class PlayerController : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
     }
 
-    private Vector3 AccelerateHorizontal(Vector3 _velocity)
+    private void AccelerateHorizontal()
     {
         Vector3 accelerationDir = new Vector3(horizontalInput, 0, verticalInput);
 
-        Vector3 horizontalVelocity = _velocity;
+        Vector3 horizontalVelocity = velocity;
         horizontalVelocity.y = 0.0f;
 
         if (accelerationDir.magnitude > float.Epsilon)
@@ -67,31 +67,29 @@ public class PlayerController : MonoBehaviour
             horizontalVelocity *= newSpeed;
         }
 
-        return new Vector3(horizontalVelocity.x, _velocity.y, horizontalVelocity.z);
+        float yvelocity = velocity.y;
+        velocity = horizontalVelocity;
+        velocity.y = yvelocity;
     }
 
-    private Vector3 AccelerateVertical(Vector3 _velocity)
+    private void AccelerateVertical()
     {
-        Vector3 newVelocity = _velocity;
-
-        newVelocity += Physics.gravity*Time.deltaTime;
+        velocity += Physics.gravity*Time.deltaTime;
 
         if (groundCheck.grounded)
-            newVelocity.y = 0;
+            velocity.y = 0;
 
-        if (Input.GetKeyDown(KeyCode.Space) && groundCheck.grounded)
+        if (Input.GetKey(KeyCode.Space) && groundCheck.grounded)
         {
-            newVelocity.y = jumpPower;
+            velocity.y = jumpPower;
             groundCheck.grounded = false;
         }
-
-        return newVelocity;
     }
 
     private void Accelerate()
     {
-        velocity = AccelerateHorizontal(velocity);
-        velocity = AccelerateVertical(velocity);
+        AccelerateHorizontal();
+        AccelerateVertical();
     }
 
     private void Move()

@@ -7,7 +7,7 @@
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
 
-        _unitScale ("Unit Scale", float) = 100
+        _UnitScale ("Unit Scale", float) = 100
         _Position ("Position", Vector) = (0, 0, 0, 0)
         _CameraPosition ("Camera Position", Vector) = (0, 0, 0, 0)
     }
@@ -31,7 +31,7 @@
 
         float4 _Position;
         float4 _CameraPosition;
-        float _unitScale;
+        float _UnitScale;
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -55,9 +55,9 @@
             world.xyz -= delta;
 
             float3 snapped;
-            snapped.x = floor(delta.x*10 + 0.5)/10;
-            snapped.y = floor(delta.y*10 + 0.5)/10;
-            snapped.z = floor(delta.z*10 + 0.5)/10;
+            snapped.x = floor(delta.x*_UnitScale + 0.5)/_UnitScale;
+            snapped.y = floor(delta.y*_UnitScale + 0.5)/_UnitScale;
+            snapped.z = floor(delta.z*_UnitScale + 0.5)/_UnitScale;
 
             world.xyz += snapped;
 

@@ -9,6 +9,7 @@ public class PixelPerfect3D : MonoBehaviour
     private Material material;
     private int positionId;
     private int cameraPositionId;
+    private int unitScaleId;
 
     private Transform sceneCamera;
 
@@ -24,8 +25,11 @@ public class PixelPerfect3D : MonoBehaviour
 
         positionId = Shader.PropertyToID("_Position");
         cameraPositionId = Shader.PropertyToID("_CameraPosition");
+        unitScaleId = Shader.PropertyToID("_UnitScale");
 
         sceneCamera = GameObject.Find("Scene Camera").transform;
+
+        material.SetFloat(unitScaleId, GraphicsConfig.unitScaleFactor);
     }
 
     private void LateUpdate()
