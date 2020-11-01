@@ -9,23 +9,26 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private CharacterController Player;
-
     public float movespeed = 6f;
-    public float jumpPower = 1f;
     public float acceleration = 1f;
 
-    private Vector3 velocity = new Vector3();
+    public Vector3 groundCheckHalfExtents;
 
     private float horizontalInput;
     private float verticalInput;
+    private Vector3 velocity = new Vector3();
 
-    private GroundCheck groundCheck;
+    private CharacterController Player;
+
+    private Collider _collider;
+    private int groundLayer;
 
     private void Awake()
     {
         Player = GetComponentInChildren<CharacterController>();
-        groundCheck = GetComponentInChildren<GroundCheck>();
+
+        _collider = GetComponent<Collider>();
+        groundLayer = LayerMask.GetMask("Ground");
     }
 
     private void GetInput()
@@ -75,15 +78,6 @@ public class PlayerController : MonoBehaviour
     private void AccelerateVertical()
     {
         velocity += Physics.gravity*Time.deltaTime;
-
-        if (groundCheck.grounded)
-            velocity.y = 0;
-
-        if (Input.GetKey(KeyCode.Space) && groundCheck.grounded)
-        {
-            velocity.y = jumpPower;
-            groundCheck.grounded = false;
-        }
     }
 
     private void Accelerate()
@@ -97,10 +91,34 @@ public class PlayerController : MonoBehaviour
         Player.Move(velocity*Time.deltaTime);
     }
 
+    private void TestGround()
+    {
+        Vector3 center = transform.position;
+        center.y -= _collider.bounds.size.y/2;
+
+        Collider[] colliders = Physics.OverlapBox(center, groundCheckHalfExtents,
+                                                  Quaternion.identity, groundLayer);
+
+        if (colliders.Length > 0)
+            velocity.y = 0f;
+    }
+
     private void Update()
     {
         GetInput();
         Accelerate();
         Move();
+        TestGround();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        _collider = GetComponent<Collider>();
+
+        Vector3 center = transform.position;
+        center.y -= _collider.bounds.size.y/2;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(center, groundCheckHalfExtents*2);
     }
 }

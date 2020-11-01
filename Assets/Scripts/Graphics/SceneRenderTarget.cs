@@ -40,7 +40,7 @@ public class SceneRenderTarget : MonoBehaviour
 
     private void Start()
     {
-        GameObject canvas = GameObject.Find("Render Target Canvas");
+        GameObject canvas = GameObject.Find("UI Canvas");
         GameObject sceneUi = canvas.transform.Find("Scene").gameObject;
 
         canvas.GetComponent<Canvas>().scaleFactor = GraphicsConfig.pixelScaleFactor;

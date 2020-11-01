@@ -1,66 +1,63 @@
-﻿// Copyright 2020, Keegan Beaulieu
-
-Shader "Unlit/TPixelDiffuse"
+﻿Shader "Custom/StatusBar"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Color ("Color", Color) = (1, 1, 1, 1)
+
+        _Percent ("Percent", Range(0, 100)) = 100
+        _Transparency ("Transparency", Range(0, 1)) = 1
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
         LOD 100
+
+        Blend SrcAlpha OneMinusSrcAlpha
 
         Pass
         {
             CGPROGRAM
-
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
 
             struct appdata
             {
                 float4 vertex : POSITION;
-                float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
             };
 
             struct v2f
             {
-                float4 vertex : SV_POSITION;
-                float3 normal : TEXCOORD1;
                 float2 uv : TEXCOORD0;
+                float4 vertex : SV_POSITION;
             };
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
 
-            float4 _Color;
+            float _Percent;
+            float _Transparency;
 
             v2f vert(appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.normal = UnityObjectToWorldNormal(v.normal);
                 o.uv = v.uv;
-                //o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                //fixed4 col = tex2D(_MainTex, i.uv);
-                fixed4 col = _Color;
+                fixed4 col = tex2D(_MainTex, i.uv);
+                col.a = min(col.a, _Transparency);
+
+                col.a *= i.uv.x*100 < _Percent;
 
                 return col;
             }
-
             ENDCG
         }
     }
