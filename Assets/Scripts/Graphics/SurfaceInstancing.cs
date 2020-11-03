@@ -39,6 +39,7 @@ public class SurfaceInstancing : MonoBehaviour
         {
             sizez = sceneCamera.orthographicSize;
             sizex = sceneCamera.orthographicSize*sceneCamera.aspect;
+
             sizex += surfaceWidth*2f;
             sizez += surfaceWidth*2f;
         }
@@ -48,10 +49,15 @@ public class SurfaceInstancing : MonoBehaviour
             sizex /= GraphicsConfig.pixelScaleFactor;
             sizex /= GraphicsConfig.unitScaleFactor;
 
-            sizez = (sceneCamera.pixelHeight);
+            sizez = sceneCamera.pixelHeight;
             sizez /= GraphicsConfig.pixelScaleFactor;
             sizez /= GraphicsConfig.unitScaleFactor;
+
+            sizex += surfaceWidth*2f;
+            sizez += surfaceWidth*2f;
         }
+
+        
     }
 
     private void Update()

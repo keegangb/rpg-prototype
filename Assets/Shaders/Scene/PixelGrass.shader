@@ -1,6 +1,6 @@
 ﻿// Copyright 2020, Keegan Beaulieu
 
-Shader "Custom/PixelDiffuse"
+Shader "Custom/PixelGrass"
 {
     Properties
     {
@@ -64,13 +64,15 @@ Shader "Custom/PixelDiffuse"
             float lightIntensity = 0;
             lightIntensity += toLight > 0.6;
             lightIntensity += toLight > 0.0;
-            lightIntensity *= 0.08;
+            lightIntensity *= 0.04;
+
+            shadowAttenuation = step(0.5, shadowAttenuation);
 
             lightIntensity *= shadowAttenuation/(1.0/_ShadowMultiplier) + (1.0 - _ShadowMultiplier);
 
-            float blueShift = step(lightIntensity, 0.001)*0.065;
+            float blueShift = step(lightIntensity, 0.001)*0.12;
 
-            return half4(lightIntensity*2.0, lightIntensity,
+            return half4(lightIntensity, lightIntensity,
                          lightIntensity + blueShift, 1.0);
         }
 

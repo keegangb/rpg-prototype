@@ -27,6 +27,9 @@ public class PixelPerfect3D : MonoBehaviour
         Shader surface = Shader.Find("Custom/PixelSurface");
         Shader editorSurface = Shader.Find("Custom/EPixelSurface");
 
+        Shader grass = Shader.Find("Custom/PixelGrass");
+        Shader editorGrass = Shader.Find("Custom/EPixelGrass");
+
         Renderer renderer = GetComponent<Renderer>();
         if (renderer)
         {
@@ -42,6 +45,10 @@ public class PixelPerfect3D : MonoBehaviour
             else if (material.shader == editorSurface)
             {
                 material.shader = surface;
+            }
+            else if (material.shader == editorGrass)
+            {
+                material.shader = grass;
             }
         }
     }
