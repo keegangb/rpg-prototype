@@ -6,50 +6,55 @@ using UnityEngine;
 
 public class PixelPerfect3D : MonoBehaviour
 {
-    private Material material;
-    private int positionId;
-    private int cameraPositionId;
-    private int unitScaleId;
+    public static Vector3 SnapPos(Vector3 _pos)
+    {
+        int scale = GraphicsConfig.unitScaleFactor;
 
-    private Transform sceneCamera;
+        Vector3 pos = _pos;
+
+        pos.x = Mathf.Round(pos.x*scale)/scale;
+        pos.y = Mathf.Round(pos.y*scale)/scale;
+        pos.z = Mathf.Round(pos.z*scale)/scale;
+
+        return pos;
+    }
 
     private void Start()
     {
         Shader diffuse = Shader.Find("Custom/PixelDiffuse");
         Shader editorDiffuse = Shader.Find("Custom/EPixelDiffuse");
-        material = GetComponent<Renderer>().material;
 
-        if (material.shader == editorDiffuse)
-            material.shader = diffuse;
-        Shader shader = material.shader;
+        Shader surface = Shader.Find("Custom/PixelSurface");
+        Shader editorSurface = Shader.Find("Custom/EPixelSurface");
 
-        positionId = Shader.PropertyToID("_Position");
-        cameraPositionId = Shader.PropertyToID("_CameraPosition");
-        unitScaleId = Shader.PropertyToID("_UnitScale");
+        Shader grass = Shader.Find("Custom/PixelGrass");
+        Shader editorGrass = Shader.Find("Custom/EPixelGrass");
 
-        sceneCamera = GameObject.Find("Scene Camera").transform;
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer)
+        {
+            Material material = renderer.material;
 
-        material.SetFloat(unitScaleId, GraphicsConfig.unitScaleFactor);
+            if (material.shader == editorDiffuse)
+            {
+                float shadowMultiplier = material.GetFloat("_ShadowMultiplier");
+
+                material.shader = diffuse;
+                material.SetFloat("_ShadowMultiplier", shadowMultiplier);
+            }
+            else if (material.shader == editorSurface)
+            {
+                material.shader = surface;
+            }
+            else if (material.shader == editorGrass)
+            {
+                material.shader = grass;
+            }
+        }
     }
 
     private void LateUpdate()
     {
-        material.SetVector(positionId,
-            new Vector4(
-                transform.position.x,
-                transform.position.y,
-                transform.position.z,
-                0
-            )
-        );
-
-        material.SetVector(cameraPositionId,
-            new Vector4(
-                sceneCamera.position.x,
-                0,
-                sceneCamera.position.z,
-                0
-            )
-        );
+        transform.position = SnapPos(transform.position);
     }
 }
