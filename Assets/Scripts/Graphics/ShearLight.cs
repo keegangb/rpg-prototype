@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Skew : MonoBehaviour
+public class ShearLight : MonoBehaviour
 {
     Vector3 offset;
     float height;

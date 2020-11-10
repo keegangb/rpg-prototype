@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Health))]
 public class Hitbox : MonoBehaviour
 {
     private Health health = null;
     private PhysicsBody physicsBody = null;
 
-    public void TakeHit(Damager damager)
+    public void TakeHit(Damager damager, Vector3 knockBackDir)
     {
         health.TakeDamage(damager.damage);
 
-        if (physicsBody)
-            physicsBody.AddForce(damager.force*damager.transform.forward);
+        if (physicsBody && damager.force > float.Epsilon)
+            physicsBody.AddForce(damager.force*knockBackDir);
     }
 
     private void Start()
     {
-        health = GetComponent<Health>();
+        health = transform.parent.GetComponent<Health>();
         physicsBody = GetComponent<PhysicsBody>();
     }
 }

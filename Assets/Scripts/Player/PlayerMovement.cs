@@ -7,60 +7,114 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : Action
 {
     public float movespeed = 6f;
     public float acceleration = 1f;
+    public float deceleration = 1f;
+
+    [System.NonSerialized] public int movementDivisor = 1;
 
     private PhysicsBody physicsBody;
 
-    private void Awake()
+    public override void OnActionBegin()
     {
+        print("Action began!");
+    }
+
+    public override void OnActionCancel()
+    {
+
+    }
+
+    public override void OnActionUpdate()
+    {
+        
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+
+        exclusive = false;
+        actionString = "Movement";
+        RequestAction();
+
         physicsBody = GetComponent<PhysicsBody>();
     }
 
-    private void AccelerateHorizontal()
+    private void AccelerateAxis(ref float velocity, float maxSpeed, float target)
     {
-        Vector3 accelerationDir = new Vector3(UserInput.movement.x, 0,
-                                              UserInput.movement.y);
+        float targetMag = Mathf.Abs(target);
+        float speed = Mathf.Abs(velocity);
 
-        Vector3 horizontalVelocity = physicsBody.velocity;
-        horizontalVelocity.y = 0.0f;
+        // To target velocity
+        float delta = target - velocity;
+        float deltaSign = Mathf.Sign(delta);
+        float deltaMag = Mathf.Abs(delta);
 
-        if (accelerationDir.magnitude > float.Epsilon)
-        {
-            accelerationDir.Normalize();
+        // How much acceleration can we preform this tick
+        float possibleDelta = (speed > maxSpeed || targetMag > float.Epsilon) ?
+                              acceleration : deceleration;
+        possibleDelta *= Time.deltaTime;
+        if (speed > maxSpeed)
+            possibleDelta += (speed - maxSpeed)/movespeed*acceleration*Time.deltaTime;
 
-            horizontalVelocity += accelerationDir*acceleration*Time.deltaTime;
-            if (horizontalVelocity.magnitude > movespeed)
-            {
-                horizontalVelocity.Normalize();
-                horizontalVelocity *= movespeed;
-            }
-        }
+        // If we can reach target, set it, otherwise approach it
+        if (possibleDelta >= deltaMag)
+            velocity = target;
         else
-        {
-            float speed = horizontalVelocity.magnitude;
-            float newSpeed;
-
-            float delta = acceleration*Time.deltaTime;
-            if (delta < speed)
-                newSpeed = speed - delta;
-            else
-                newSpeed = 0;
-
-            horizontalVelocity.Normalize();
-            horizontalVelocity *= newSpeed;
-        }
-
-        float yvelocity = physicsBody.velocity.y;
-        physicsBody.velocity = horizontalVelocity;
-        physicsBody.velocity.y = yvelocity;
+            velocity += deltaSign*possibleDelta;
     }
+
+    private void OnCancel() { }
 
     private void Accelerate()
     {
-        AccelerateHorizontal();
+        bool canMove = false;
+        if (UserInput.movement != Vector2.zero)
+            canMove = false;//state.RequestSecondaryAction("Movement", OnCancel);
+        
+        // Target velocity
+        float targetx;
+        float targetz;
+
+        if (canMove)
+        {
+            Vector3 targetVelocity = new Vector3(UserInput.movement.x, 0,
+                                                 UserInput.movement.y);
+            targetVelocity.Normalize();
+            targetVelocity *= movespeed;
+
+            if (targetVelocity.magnitude > float.Epsilon)
+                transform.forward = targetVelocity;
+
+            targetx = targetVelocity.x;
+            targetz = targetVelocity.z;
+        }
+        else
+        {
+            targetx = 0;
+            targetz = 0;
+        }
+
+        // Max velocity
+        Vector3 maxVelocity = physicsBody.velocity;
+        maxVelocity.y = 0f;
+        maxVelocity.Normalize();
+        maxVelocity *= movespeed;
+
+        maxVelocity.x = Mathf.Abs(maxVelocity.x);
+        maxVelocity.z = Mathf.Abs(maxVelocity.z);
+
+        // Scale with divisor
+        maxVelocity /= movementDivisor;
+        targetx /= movementDivisor;
+        targetz /= movementDivisor;
+
+        // Accelerate
+        AccelerateAxis(ref physicsBody.velocity.x, maxVelocity.x, targetx);
+        AccelerateAxis(ref physicsBody.velocity.z, maxVelocity.z, targetz);
     }
 
     private void Update()

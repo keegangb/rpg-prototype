@@ -40,7 +40,7 @@ public class PhysicsBody : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         Gravity();
         Move();
