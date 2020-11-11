@@ -8,6 +8,14 @@ public class Hitbox : MonoBehaviour
     private Health health = null;
     private PhysicsBody physicsBody = null;
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            health.TakeDamage(10f);
+        }
+    }
+
     public void TakeHit(Damager damager)
     {
         health.TakeDamage(damager.damage);

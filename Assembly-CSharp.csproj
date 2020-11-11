@@ -36,20 +36,21 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\PhysicsBody.cs" />
+     <Compile Include="Assets\Scripts\Combat\Health.cs" />
      <Compile Include="Assets\Scripts\Graphics\Skew.cs" />
      <Compile Include="Assets\Scripts\Graphics\SceneProjection.cs" />
      <Compile Include="Assets\Scripts\Player\CameraController.cs" />
+     <Compile Include="Assets\Scripts\Player\PlayerMovement.cs" />
      <Compile Include="Assets\Scripts\UI\StatusBar.cs" />
      <Compile Include="Assets\Scripts\Graphics\GraphicsConfig.cs" />
      <Compile Include="Assets\Scripts\Graphics\SceneRenderTarget.cs" />
      <Compile Include="Assets\Scripts\Graphics\SurfaceInstancing.cs" />
-     <Compile Include="Assets\Scripts\Graphics\PixelPerfect3D.cs" />
-     <Compile Include="Assets\Scripts\Player\PlayerMovement.cs" />
-     <Compile Include="Assets\Scripts\Player\UserInput.cs" />
-     <Compile Include="Assets\Scripts\PhysicsBody.cs" />
      <Compile Include="Assets\Scripts\Combat\Damager.cs" />
      <Compile Include="Assets\Scripts\Combat\Hitbox.cs" />
-     <Compile Include="Assets\Scripts\Combat\Health.cs" />
+     <Compile Include="Assets\Scripts\Graphics\PixelPerfect3D.cs" />
+     <Compile Include="Assets\Scripts\Player\UserInput.cs" />
+     <Compile Include="Assets\Scripts\UI\HealthBar.cs" />
      <None Include="Assets\Shaders\Scene\PixelDiffuse.shader" />
      <None Include="Assets\Shaders\Scene\EPixelGrass.shader" />
      <None Include="Assets\Shaders\Scene\EPixelDiffuse.shader" />
@@ -592,37 +593,31 @@
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.1.11f1/Editor/Data/NetStandard/compat/2.0.0/shims/netfx/System.Xml.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline.Editor">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.2D.PixelPerfect.Editor">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/Unity.2D.PixelPerfect.Editor.dll</HintPath>
+        <HintPath>D:/UBC Game Dev Club/rpg-prototype/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+        <HintPath>D:/UBC Game Dev Club/rpg-prototype/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+        <HintPath>D:/UBC Game Dev Club/rpg-prototype/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+        <HintPath>D:/UBC Game Dev Club/rpg-prototype/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+        <HintPath>D:/UBC Game Dev Club/rpg-prototype/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.2D.PixelPerfect">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/Unity.2D.PixelPerfect.dll</HintPath>
+        <HintPath>D:/UBC Game Dev Club/rpg-prototype/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
+        <HintPath>D:/UBC Game Dev Club/rpg-prototype/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+        <HintPath>D:/UBC Game Dev Club/rpg-prototype/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
-        <HintPath>C:/Users/Keegan/Desktop/rpg-prototype/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+        <HintPath>D:/UBC Game Dev Club/rpg-prototype/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
