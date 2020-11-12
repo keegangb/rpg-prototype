@@ -1,156 +1,153 @@
 ﻿// Copyright 2020, Keegan Beaulieu
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAttack : MonoBehaviour
+public class PlayerAttack : Action
 {
-    // private enum AttackPhase
+    private enum AttackPhase
+    {
+        Delay,
+        Strike,
+        Recovery
+    }
+
+    public float strikeDuration;
+    public float delayDuration;
+    public float recoveryDuration;
+
+    public float extendLength;
+    public float stepForce;
+
+    public GameObject attackPrefab;
+    public Damager damager;
+
+    private PhysicsBody physicsBody;
+    private Hitbox hitbox;
+
+    private float phaseTimer = 0f;
+    private AttackPhase phase;
+    private GameObject attackInstance = null;
+
+    public override void OnActionBegin()
+    {
+        phaseTimer = 0f;
+        phase = AttackPhase.Delay;
+
+        actionCancellable = true;
+
+        OrientPlayerWithMouse();
+    }
+
+    public override void OnActionCancel()
+    {
+        DestroyAttackCollider();
+    }
+
+    public override void OnActionUpdate()
+    {
+        switch (phase)
+        {
+        case AttackPhase.Delay:
+            Delay();
+            break;
+        case AttackPhase.Strike:
+            Strike();
+            break;
+        case AttackPhase.Recovery:
+            Recovery();
+            break;
+        }
+
+        phaseTimer += Time.deltaTime;
+    }
+
+    // ----- HELPERS -----
     // {
-    //     Inactive,
-    //     Delay,
-    //     Strike,
-    //     Recovery
+
+    private void OrientPlayerWithMouse()
+    {
+        transform.forward = new Vector3(UserInput.mouseDirection.x, 0,
+                                        UserInput.mouseDirection.y);
+    }
+
+    private void DestroyAttackCollider()
+    {
+        if (attackInstance)
+            Destroy(attackInstance);
+
+        attackInstance = null;
+    }
+
+    private void ApplyStepForce()
+    {
+        physicsBody.AddForce(transform.forward*stepForce);
+    }
+
+    private void InstantiateAttackCollider()
+    {
+        attackInstance = Instantiate(attackPrefab);
+        attackInstance.transform.parent = transform;
+
+        BasicAttackCollider basicAttack = attackInstance.GetComponent<BasicAttackCollider>();
+        basicAttack.damager = damager;
+        basicAttack.ownerHitbox = hitbox;
+
+        Vector3 pos = transform.position;
+        pos += transform.forward*extendLength;
+
+        attackInstance.transform.position = pos;
+        attackInstance.transform.rotation = transform.rotation;
+    }
+
     // }
+    // ----- HELPERS -----
 
-    // public float strikeDuration;
-    // public float delayDuration;
-    // public float recoveryDuration;
+    private void Delay()
+    {
+        if (phaseTimer > delayDuration)
+        {
+            phase = AttackPhase.Strike;
+            phaseTimer -= delayDuration;
 
-    // public float extendLength;
-    // public float stepForce;
+            actionCancellable = false;
 
-    // public GameObject attackPrefab;
-    // public Damager damager;
+            ApplyStepForce();
+            InstantiateAttackCollider();
+        }
+    }
 
-    // private ActionState state;
-    // private PhysicsBody physicsBody;
+    private void Strike()
+    {
+        if (phaseTimer > strikeDuration)
+        {
+            phase = AttackPhase.Recovery;
+            phaseTimer -= strikeDuration;
 
-    // private float phaseTimer = 0f;
-    // private AttackPhase phase = AttackPhase.Inactive;
-    // private GameObject attackInstance = null;
+            DestroyAttackCollider();
+        }
+    }
 
-    // private List<string> cancelBlacklist = new List<string>();
+    private void Recovery()
+    {
+        if (phaseTimer > recoveryDuration)
+            EndAction();
+    }
 
-    // private void Start()
-    // {
-    //     state = PlayerActionState.state;
-    //     physicsBody = GetComponent<PhysicsBody>();
+    protected override void Start()
+    {
+        base.Start();
 
-    //     cancelBlacklist.Add("Movement");
-    // }
+        actionExclusive = true;
+        actionString = "Attack";
+        actionCancelBlacklist.Add("Movement");
 
-    // private void ApplyStepForce()
-    // {
-    //     physicsBody.AddForce(transform.forward*stepForce);
-    // }
+        physicsBody = GetComponent<PhysicsBody>();
+        hitbox = transform.Find("Hitbox").GetComponent<Hitbox>();
+    }
 
-    // private void InstantiateAttackCollider()
-    // {
-    //     attackInstance = Instantiate(attackPrefab);
-    //     attackInstance.transform.parent = transform;
-
-    //     BasicAttack basicAttack = attackInstance.GetComponent<BasicAttack>();
-    //     basicAttack.damager = damager;
-
-    //     Vector3 pos = transform.position;
-    //     pos += transform.forward*extendLength;
-
-    //     attackInstance.transform.position = pos;
-    //     attackInstance.transform.rotation = transform.rotation;
-    // }
-
-    // private void DestroyAttackCollider()
-    // {
-    //     if (attackInstance)
-    //         Destroy(attackInstance);
-
-    //     attackInstance = null;
-    // }
-
-    // private void OrientPlayerWithMouse()
-    // {
-    //     transform.forward = new Vector3(UserInput.mouseDirection.x, 0,
-    //                                     UserInput.mouseDirection.y);
-    // }
-    
-    // private void OnCancel()
-    // {
-    //     phase = AttackPhase.Inactive;
-    // }
-
-    // private void Inactive()
-    // {
-    //     if (UserInput.attack)
-    //     {
-    //         bool canAttack = state.RequestPrimaryAction("Attack");
-
-    //         if (canAttack)
-    //         {
-    //             phaseTimer = 0f;
-    //             phase = AttackPhase.Delay;
-
-    //             state.EnableCancel("Attack", OnCancel, cancelBlacklist);
-
-    //             OrientPlayerWithMouse();
-    //         }
-    //     }
-    // }
-
-    // private void Delay()
-    // {
-    //     if (phaseTimer > delayDuration)
-    //     {
-    //         phase = AttackPhase.Strike;
-    //         phaseTimer -= delayDuration;
-
-    //         state.DisableCancel("Attack");
-
-    //         ApplyStepForce();
-    //         InstantiateAttackCollider();
-    //     }
-    // }
-
-    // private void Strike()
-    // {
-    //     if (phaseTimer > strikeDuration)
-    //     {
-    //         phase = AttackPhase.Recovery;
-    //         phaseTimer -= strikeDuration;
-
-    //         DestroyAttackCollider();
-    //     }
-    // }
-
-    // private void Recovery()
-    // {
-    //     if (phaseTimer > recoveryDuration)
-    //     {
-    //         state.CancelPrimaryAction("Attack");
-    //         phase = AttackPhase.Inactive;
-    //     }
-    // }
-
-    // private void Update()
-    // {
-    //     switch (phase)
-    //     {
-    //     case AttackPhase.Inactive:
-    //         Inactive();
-    //         break;
-    //     case AttackPhase.Delay:
-    //         Delay();
-    //         break;
-    //     case AttackPhase.Strike:
-    //         Strike();
-    //         break;
-    //     case AttackPhase.Recovery:
-    //         Recovery();
-    //         break;
-    //     }
-
-    //     if (phase != AttackPhase.Inactive)
-    //         phaseTimer += Time.deltaTime;
-    // }
+    private void Update()
+    {
+        if (UserInput.attack)
+            RequestAction();
+    }
 }

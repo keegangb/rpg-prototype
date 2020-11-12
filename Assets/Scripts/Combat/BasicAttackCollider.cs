@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicAttack : MonoBehaviour
+public class BasicAttackCollider : MonoBehaviour
 {
     public Damager damager;
+    public Hitbox ownerHitbox = null;
 
     #if UNITY_EDITOR
     public Mesh debugMesh;
@@ -27,7 +27,7 @@ public class BasicAttack : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Hitbox hitbox = other.GetComponent<Hitbox>();
-        if (hitbox)
+        if (hitbox && hitbox != ownerHitbox)
         {
             foreach (Hitbox _hitbox in blacklist)
             {

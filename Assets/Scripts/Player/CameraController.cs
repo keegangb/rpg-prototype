@@ -3,8 +3,6 @@
  * Copyright (c) 2020, Keegan Beaulieu
  */
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -39,7 +37,7 @@ public class CameraController : MonoBehaviour
         currentOffset = Vector3.Lerp(currentOffset, targetOffset, smoothSpeed);
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         Vector3 targetPosition = _player.position;
         targetPosition = PixelPerfect3D.SnapPos(targetPosition);

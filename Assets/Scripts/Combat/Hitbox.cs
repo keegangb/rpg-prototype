@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Hitbox : MonoBehaviour
 {
@@ -18,6 +16,6 @@ public class Hitbox : MonoBehaviour
     private void Start()
     {
         health = transform.parent.GetComponent<Health>();
-        physicsBody = GetComponent<PhysicsBody>();
+        physicsBody = transform.parent.GetComponent<PhysicsBody>();
     }
 }

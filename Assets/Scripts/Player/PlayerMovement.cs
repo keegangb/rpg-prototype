@@ -3,8 +3,6 @@
  * Copyright (c) 2020, Keegan Beaulieu
  */
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : Action
@@ -17,28 +15,24 @@ public class PlayerMovement : Action
 
     private PhysicsBody physicsBody;
 
+    private bool canMove = false;
+
     public override void OnActionBegin()
     {
-        print("Action began!");
+        canMove = true;
     }
 
     public override void OnActionCancel()
     {
-
-    }
-
-    public override void OnActionUpdate()
-    {
-        
+        canMove = false;
     }
 
     protected override void Start()
     {
         base.Start();
 
-        exclusive = false;
+        actionExclusive = false;
         actionString = "Movement";
-        RequestAction();
 
         physicsBody = GetComponent<PhysicsBody>();
     }
@@ -67,14 +61,8 @@ public class PlayerMovement : Action
             velocity += deltaSign*possibleDelta;
     }
 
-    private void OnCancel() { }
-
     private void Accelerate()
     {
-        bool canMove = false;
-        if (UserInput.movement != Vector2.zero)
-            canMove = false;//state.RequestSecondaryAction("Movement", OnCancel);
-        
         // Target velocity
         float targetx;
         float targetz;
@@ -119,6 +107,9 @@ public class PlayerMovement : Action
 
     private void Update()
     {
+        if (!canMove)
+            RequestAction();
+
         Accelerate();
     }
 }

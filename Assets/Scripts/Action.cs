@@ -1,15 +1,15 @@
 ﻿// Copyright 2020, Keegan Beaulieu
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Action : MonoBehaviour
 {
     [System.NonSerialized] public string actionString = null;
-    [System.NonSerialized] public bool exclusive = true;
-    [System.NonSerialized] public bool cancellable = false;
-    [System.NonSerialized] public List<string> cancelBlacklist = new List<string>();
+    [System.NonSerialized] public bool actionExclusive = true;
+    [System.NonSerialized] public bool actionCancellable = false;
+    [System.NonSerialized] public List<string> actionCancelBlacklist = new List<string>();
+    [System.NonSerialized] public List<string> exceptions = new List<string>();
 
     private ActionManager manager;
 
@@ -17,17 +17,41 @@ public class Action : MonoBehaviour
     public virtual void OnActionCancel() { }
     public virtual void OnActionUpdate() { }
 
-    protected virtual void Start()
+    protected void RequestAction()
     {
-        manager = GetComponent<ActionManager>();
+        if (!ValidateRequest())
+            return;
+
+        manager.RequestAction(this);
+    }
+
+    protected void ForceAction()
+    {
+        if (!ValidateRequest())
+            return;
+
+        manager.ForceAction(this);
     }
 
     protected void EndAction()
     {
-
+        manager.CancelAction(this);
     }
 
-    protected void RequestAction()
+    protected void AddConflict(string priorityAction, string otherAction)
+    {
+        manager.AddConflict(priorityAction, otherAction);
+    }
+
+    protected void AddException(string exception)
+    {
+        exceptions.Add(exception);
+    }
+
+    // ----- HELPERS ------
+    // {
+
+    private bool ValidateRequest()
     {
     #if DEBUG
         if (actionString == null)
@@ -40,10 +64,23 @@ public class Action : MonoBehaviour
             );
             Debug.LogError(error);
 
-            return;
+            return false;
         }
-    #endif // DEBUG
 
-        manager.RequestAction(this);
+        return true;
+    #endif // DEBUG
+    }
+
+    // }
+    // ----- HELPERS ------
+
+    protected virtual void Start()
+    {
+        manager = GetComponent<ActionManager>();
+    }
+
+    protected virtual void OnDestroy()
+    {
+        manager.CancelAction(this);
     }
 }

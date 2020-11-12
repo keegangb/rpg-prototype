@@ -1,7 +1,5 @@
 ﻿// Copyright 2020, Keegan Beaulieu
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PixelPerfect3D : MonoBehaviour
