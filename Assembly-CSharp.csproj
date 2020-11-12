@@ -36,20 +36,35 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Graphics\Skew.cs" />
+     <Compile Include="Assets\Scripts\PhysicsBody.cs" />
+     <Compile Include="Assets\Scripts\Combat\Health.cs" />
+     <Compile Include="Assets\Scripts\Graphics\ShearLight.cs" />
      <Compile Include="Assets\Scripts\Graphics\SceneProjection.cs" />
      <Compile Include="Assets\Scripts\Player\CameraController.cs" />
-     <Compile Include="Assets\Scripts\Graphics\GraphicsConfig.cs" />
-     <Compile Include="Assets\Scripts\Graphics\SceneRenderTarget.cs" />
-     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
-     <Compile Include="Assets\Scripts\Graphics\PixelPerfect3D.cs" />
-     <Compile Include="Assets\Scripts\Graphics\SurfaceInstancing.cs" />
+     <Compile Include="Assets\Scripts\ActionManager.cs" />
+     <Compile Include="Assets\Scripts\Player\PlayerMovement.cs" />
      <Compile Include="Assets\Scripts\UI\StatusBar.cs" />
+     <Compile Include="Assets\Scripts\Graphics\GraphicsConfig.cs" />
+     <Compile Include="Assets\Scripts\Player\InputEvent.cs" />
+     <Compile Include="Assets\Scripts\Graphics\SceneRenderTarget.cs" />
+     <Compile Include="Assets\Scripts\Graphics\SurfaceInstancing.cs" />
+     <Compile Include="Assets\Scripts\Debug\SceneDebugger.cs" />
+     <Compile Include="Assets\Scripts\Combat\Damager.cs" />
+     <Compile Include="Assets\Scripts\Action.cs" />
+     <Compile Include="Assets\Scripts\Combat\BasicAttackCollider.cs" />
+     <Compile Include="Assets\Scripts\Combat\Hitbox.cs" />
+     <Compile Include="Assets\Scripts\Player\PlayerAttack.cs" />
+     <Compile Include="Assets\Scripts\Graphics\PixelPerfect3D.cs" />
+     <Compile Include="Assets\Scripts\Player\UserInput.cs" />
+     <None Include="Assets\Shaders\Debug\PixelDebug.shader" />
      <None Include="Assets\Shaders\Scene\PixelDiffuse.shader" />
+     <None Include="Assets\Shaders\Scene\EPixelGrass.shader" />
      <None Include="Assets\Shaders\Scene\EPixelDiffuse.shader" />
      <None Include="Assets\Shaders\Scene\EPixelSurface.shader" />
+     <None Include="Assets\Shaders\Scene\PixelGrass.shader" />
      <None Include="Assets\Shaders\UI\StatusBar.shader" />
      <None Include="Assets\Shaders\Scene\PixelSurface.shader" />
+     <None Include="Assets\csc.rsp" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.1.11f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

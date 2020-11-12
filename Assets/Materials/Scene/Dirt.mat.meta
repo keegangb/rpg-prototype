@@ -1,5 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 82550412244dcd34389a40177bdf3e55
+=======
+<<<<<<< HEAD:Assets/Materials/Scene/Grass.mat.meta
+guid: 1c8881897c91a6949a3380fa366cc81b
+=======
+guid: 82550412244dcd34389a40177bdf3e55
+>>>>>>> 0fc786b939bed9ac50a95c0baf20a983b6b28560:Assets/Materials/Scene/Dirt.mat.meta
+>>>>>>> 0fc786b939bed9ac50a95c0baf20a983b6b28560
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0
