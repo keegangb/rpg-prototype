@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Attack Debug
-  m_Shader: {fileID: 4800000, guid: 724226e673763f547b5d3e1d65e0a7d2, type: 3}
+  m_Shader: {fileID: 4800000, guid: e921f33e6ff1f1e4590a67411fa9b609, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
