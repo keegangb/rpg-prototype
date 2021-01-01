@@ -21,8 +21,13 @@ public class PlayerAttack : Action
     public GameObject attackPrefab;
     public Damager damager;
 
+    public Vector3 mouseDirectionWorldBias;
+
     private PhysicsBody physicsBody;
     private Hitbox hitbox;
+    private SmoothRotation smoothRotation;
+    private Transform cameraTransform;
+    private Camera mainCamera;
 
     private float phaseTimer = 0f;
     private AttackPhase phase;
@@ -35,7 +40,7 @@ public class PlayerAttack : Action
 
         actionCancellable = true;
 
-        OrientPlayerWithMouse();
+        smoothRotation.targetDirection = GetMouseDirection();
     }
 
     public override void OnActionCancel()
@@ -60,47 +65,6 @@ public class PlayerAttack : Action
 
         phaseTimer += Time.deltaTime;
     }
-
-    // ----- HELPERS -----
-    // {
-
-    private void OrientPlayerWithMouse()
-    {
-        transform.forward = new Vector3(UserInput.mouseDirection.x, 0,
-                                        UserInput.mouseDirection.y);
-    }
-
-    private void DestroyAttackCollider()
-    {
-        if (attackInstance)
-            Destroy(attackInstance);
-
-        attackInstance = null;
-    }
-
-    private void ApplyStepForce()
-    {
-        physicsBody.AddForce(transform.forward*stepForce);
-    }
-
-    private void InstantiateAttackCollider()
-    {
-        attackInstance = Instantiate(attackPrefab);
-        attackInstance.transform.parent = transform;
-
-        BasicAttackCollider basicAttack = attackInstance.GetComponent<BasicAttackCollider>();
-        basicAttack.damager = damager;
-        basicAttack.ownerHitbox = hitbox;
-
-        Vector3 pos = transform.position;
-        pos += transform.forward*extendLength;
-
-        attackInstance.transform.position = pos;
-        attackInstance.transform.rotation = transform.rotation;
-    }
-
-    // }
-    // ----- HELPERS -----
 
     private void Delay()
     {
@@ -130,7 +94,7 @@ public class PlayerAttack : Action
     private void Recovery()
     {
         if (phaseTimer > recoveryDuration)
-            EndAction();
+            CancelAction();
     }
 
     protected override void Start()
@@ -142,12 +106,68 @@ public class PlayerAttack : Action
         actionCancelBlacklist.Add("Movement");
 
         physicsBody = GetComponent<PhysicsBody>();
+        smoothRotation = GetComponent<SmoothRotation>();
         hitbox = transform.Find("Hitbox").GetComponent<Hitbox>();
+
+        cameraTransform = GameObject.Find("Main Camera").transform;
+        mainCamera = cameraTransform.GetComponent<Camera>();
     }
 
     private void Update()
     {
         if (UserInput.attack)
             RequestAction();
+    }
+
+    // ----- HELPERS -----
+    private Vector3 GetMouseDirection()
+    {
+        Vector3 worldPosition = transform.position + mouseDirectionWorldBias;
+
+        Vector3 mousePosition;
+        mousePosition.x = UserInput.mousePosition.x;
+        mousePosition.z = UserInput.mousePosition.y;
+
+        Vector3 playerScreen = mainCamera.WorldToScreenPoint(worldPosition);
+        playerScreen.z = playerScreen.y;
+
+        mousePosition.y = 0;
+        playerScreen.y = 0;
+
+        Vector3 euler = cameraTransform.eulerAngles;
+        euler.x = 0;
+        euler.z = 0;
+        Quaternion rotationMatrix = Quaternion.Euler(euler);
+
+        return rotationMatrix*(mousePosition - playerScreen);
+    }
+
+    private void DestroyAttackCollider()
+    {
+        if (attackInstance)
+            Destroy(attackInstance);
+
+        attackInstance = null;
+    }
+
+    private void ApplyStepForce()
+    {
+        physicsBody.AddForce(transform.forward*stepForce);
+    }
+
+    private void InstantiateAttackCollider()
+    {
+        attackInstance = Instantiate(attackPrefab);
+        attackInstance.transform.parent = transform;
+
+        BasicAttackCollider basicAttack = attackInstance.GetComponent<BasicAttackCollider>();
+        basicAttack.damager = damager;
+        basicAttack.ownerHitbox = hitbox;
+
+        Vector3 pos = transform.position;
+        pos += transform.forward*extendLength;
+
+        attackInstance.transform.position = pos;
+        attackInstance.transform.rotation = transform.rotation;
     }
 }

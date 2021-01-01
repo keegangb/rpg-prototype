@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Shaders/Debug/PixelDebug.shader.meta
+<<<<<<< HEAD:Assets/Shaders/Scene/EPixelGrass.shader.meta
+guid: e921f33e6ff1f1e4590a67411fa9b609
+=======
+guid: 724226e673763f547b5d3e1d65e0a7d2
+>>>>>>> 0fc786b939bed9ac50a95c0baf20a983b6b28560:Assets/Shaders/Debug/PixelDebug.shader.meta
+=======
+guid: 9ef0d91ce40d62745bbac1edd7ec0e9c
+>>>>>>> feature/basic_mechanics:Assets/Shaders/Toon.shader.meta
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

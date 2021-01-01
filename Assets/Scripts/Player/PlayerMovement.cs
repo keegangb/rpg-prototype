@@ -9,11 +9,13 @@ public class PlayerMovement : Action
 {
     public float movespeed = 6f;
     public float acceleration = 1f;
-    public float deceleration = 1f;
-
-    [System.NonSerialized] public int movementDivisor = 1;
+    public float friction = 1f;
+    public float correction = 1f;
+    public float orientationAlpha = 0.1f;
 
     private PhysicsBody physicsBody;
+    private Transform cameraTransform;
+    private SmoothRotation smoothRotation;
 
     private bool canMove = false;
 
@@ -27,6 +29,12 @@ public class PlayerMovement : Action
         canMove = false;
     }
 
+    public override void OnActionUpdate()
+    {
+        if (UserInput.movement == Vector2.zero)
+            CancelAction();
+    }
+
     protected override void Start()
     {
         base.Start();
@@ -35,79 +43,82 @@ public class PlayerMovement : Action
         actionString = "Movement";
 
         physicsBody = GetComponent<PhysicsBody>();
-    }
-
-    private void AccelerateAxis(ref float velocity, float maxSpeed, float target)
-    {
-        float targetMag = Mathf.Abs(target);
-        float speed = Mathf.Abs(velocity);
-
-        // To target velocity
-        float delta = target - velocity;
-        float deltaSign = Mathf.Sign(delta);
-        float deltaMag = Mathf.Abs(delta);
-
-        // How much acceleration can we preform this tick
-        float possibleDelta = (speed > maxSpeed || targetMag > float.Epsilon) ?
-                              acceleration : deceleration;
-        possibleDelta *= Time.deltaTime;
-        if (speed > maxSpeed)
-            possibleDelta += (speed - maxSpeed)/movespeed*acceleration*Time.deltaTime;
-
-        // If we can reach target, set it, otherwise approach it
-        if (possibleDelta >= deltaMag)
-            velocity = target;
-        else
-            velocity += deltaSign*possibleDelta;
+        smoothRotation = GetComponent<SmoothRotation>();
+        cameraTransform = Camera.main.transform;
     }
 
     private void Accelerate()
     {
         // Target velocity
-        float targetx;
-        float targetz;
+        Vector3 targetVelocity;
 
         if (canMove)
         {
-            Vector3 targetVelocity = new Vector3(UserInput.movement.x, 0,
-                                                 UserInput.movement.y);
+            // Get base target
+            targetVelocity = new Vector3(UserInput.movement.x, 0,
+                                         UserInput.movement.y);
             targetVelocity.Normalize();
             targetVelocity *= movespeed;
 
-            if (targetVelocity.magnitude > float.Epsilon)
-                transform.forward = targetVelocity;
+            // Rotate target to align with camera
+            float cameraY = cameraTransform.eulerAngles.y;
+            Quaternion cameraYawMatrix = Quaternion.Euler(0, cameraY, 0);
+            targetVelocity = cameraYawMatrix*targetVelocity;
 
-            targetx = targetVelocity.x;
-            targetz = targetVelocity.z;
+            // Align player to movement
+            if (targetVelocity.magnitude > float.Epsilon)
+                smoothRotation.targetDirection = targetVelocity;
         }
         else
         {
-            targetx = 0;
-            targetz = 0;
+            targetVelocity = Vector3.zero;
         }
 
-        // Max velocity
-        Vector3 maxVelocity = physicsBody.velocity;
-        maxVelocity.y = 0f;
-        maxVelocity.Normalize();
-        maxVelocity *= movespeed;
+        Vector3 horizontalVelocity = physicsBody.velocity;
+        horizontalVelocity.y = 0f;
 
-        maxVelocity.x = Mathf.Abs(maxVelocity.x);
-        maxVelocity.z = Mathf.Abs(maxVelocity.z);
+        float speed = horizontalVelocity.magnitude;
+        Vector3 difference = targetVelocity - horizontalVelocity;
+        Vector3 differenceSigns = new Vector3(Mathf.Sign(difference.x), 0,
+                                              Mathf.Sign(difference.z));
 
-        // Scale with divisor
-        maxVelocity /= movementDivisor;
-        targetx /= movementDivisor;
-        targetz /= movementDivisor;
+        // How much acceleration can we preform this tick
+        float xDelta, zDelta;
 
-        // Accelerate
-        AccelerateAxis(ref physicsBody.velocity.x, maxVelocity.x, targetx);
-        AccelerateAxis(ref physicsBody.velocity.z, maxVelocity.z, targetz);
+        if (targetVelocity.x != 0)
+            xDelta = acceleration;
+        else
+            xDelta = friction*Mathf.Abs(horizontalVelocity.x);
+
+        if (targetVelocity.z != 0)
+            zDelta = acceleration;
+        else
+            zDelta = friction*Mathf.Abs(horizontalVelocity.z);
+
+        if (speed > movespeed)
+        {
+            xDelta *= (speed - movespeed)*correction + 1f;
+            zDelta *= (speed - movespeed)*correction + 1f;
+        }
+
+        xDelta *= Time.deltaTime;
+        zDelta *= Time.deltaTime;
+
+        // If we can reach target, set it, otherwise approach it
+        if (xDelta >= Mathf.Abs(difference.x))
+            physicsBody.velocity.x = targetVelocity.x;
+        else
+            physicsBody.velocity.x += xDelta*differenceSigns.x;
+
+        if (zDelta >= Mathf.Abs(difference.z))
+            physicsBody.velocity.z = targetVelocity.z;
+        else
+            physicsBody.velocity.z += zDelta*differenceSigns.z;
     }
 
     private void Update()
     {
-        if (!canMove)
+        if (!canMove && UserInput.movement != Vector2.zero)
             RequestAction();
 
         Accelerate();

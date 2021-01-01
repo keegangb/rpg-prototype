@@ -5,6 +5,12 @@ using UnityEngine;
 
 public class ActionManager : MonoBehaviour
 {
+    public delegate void ActionCallback(string action);
+
+    public ActionCallback onActionBegin = null;
+    public ActionCallback onActionCancel = null;
+    public int activeActionCount = 0;
+
     private struct Conflict
     {
         public string other;
@@ -23,6 +29,27 @@ public class ActionManager : MonoBehaviour
     {
         RegisterConflict(priorityAction, otherAction, true);
         RegisterConflict(otherAction, priorityAction, false);
+    }
+
+    // For force cancelling an action
+    public void CancelAction(Action action)
+    {
+        if (!IsActive(action))
+            return;
+
+        action.OnActionCancel();
+        activeActions.Remove(action.actionString);
+        if (action.actionExclusive)
+            activeExclusive = null;
+
+        if (onActionCancel != null)
+            onActionCancel(action.actionString);
+        --activeActionCount;
+    }
+
+    public void RequestAction(Action action)
+    {
+        requestQueue.Enqueue(action);
     }
 
     // For forcing an action to begin
@@ -47,26 +74,7 @@ public class ActionManager : MonoBehaviour
         BeginAction(action);
     }
 
-    // For force cancelling an action
-    public void CancelAction(Action action)
-    {
-        if (!IsActive(action))
-            return;
-
-        action.OnActionCancel();
-        activeActions.Remove(action.actionString);
-        if (action.actionExclusive)
-            activeExclusive = null;
-    }
-
-    public void RequestAction(Action action)
-    {
-        requestQueue.Enqueue(action);
-    }
-
     // ----- HELPERS -----
-    // {
-
     private bool IsActive(Action action)
     {
         if (activeActions.ContainsKey(action.actionString))
@@ -195,16 +203,17 @@ public class ActionManager : MonoBehaviour
         {
             Action exceptionAction;
             if (activeActions.TryGetValue(exception, out exceptionAction))
+            {
                 activeExceptions.Add(exceptionAction);
+                activeActions.Remove(exception);
+            }
         }
 
-        foreach (Action action in activeActions.Values)
+        List<Action> activeActionsList = new List<Action>(activeActions.Values);
+        foreach (Action action in activeActionsList)
         {
-            action.OnActionCancel();
+            CancelAction(action);
         }
-
-        activeActions.Clear();
-        activeExclusive = null;
 
         foreach (Action exception in activeExceptions)
         {
@@ -218,11 +227,11 @@ public class ActionManager : MonoBehaviour
         activeActions.Add(action.actionString, action);
         if (action.actionExclusive)
             activeExclusive = action;
+
+        if (onActionBegin != null)
+            onActionBegin(action.actionString);
+        ++activeActionCount;
     }
-
-    // CancelAction(Action) defined in publics
-
-    // }
     // --- HELPERS ---
 
     private void ProcessExclusiveRequest(Action action)
