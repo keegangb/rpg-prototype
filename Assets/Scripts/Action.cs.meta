@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Scripts/Graphics/Skew.cs.meta
+guid: cd13f570a2c314946abf08c3fb07d1cc
+=======
 guid: f6a2282a2ca026b439790cc649a75c08
+>>>>>>> 0fc786b939bed9ac50a95c0baf20a983b6b28560:Assets/Scripts/Action.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

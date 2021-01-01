@@ -33,7 +33,7 @@ public class Action : MonoBehaviour
         manager.ForceAction(this);
     }
 
-    protected void EndAction()
+    protected void CancelAction()
     {
         manager.CancelAction(this);
     }
@@ -49,8 +49,6 @@ public class Action : MonoBehaviour
     }
 
     // ----- HELPERS ------
-    // {
-
     private bool ValidateRequest()
     {
     #if DEBUG
@@ -70,8 +68,6 @@ public class Action : MonoBehaviour
         return true;
     #endif // DEBUG
     }
-
-    // }
     // ----- HELPERS ------
 
     protected virtual void Start()

@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class BasicAttackCollider : MonoBehaviour
 {
-    public Damager damager;
-    public Hitbox ownerHitbox = null;
+    [HideInInspector] public Damager damager;
+    [HideInInspector] public Hitbox ownerHitbox = null;
 
     #if UNITY_EDITOR
     public Mesh debugMesh;
@@ -38,19 +38,5 @@ public class BasicAttackCollider : MonoBehaviour
             hitbox.TakeHit(damager, transform.forward);
             blacklist.Add(hitbox);
         }
-    }
-
-    private void Update()
-    {
-    #if UNITY_EDITOR
-        Vector3 size = Vector3.one;
-
-        System.Type type = _collider.GetType();
-        if (type == typeof(BoxCollider))
-            size = ((BoxCollider)(_collider)).size;
-
-        SceneDebugger.DrawMesh(debugMesh, debugMeshMaterial, transform.position,
-                               transform.rotation, size);
-    #endif
     }
 }
